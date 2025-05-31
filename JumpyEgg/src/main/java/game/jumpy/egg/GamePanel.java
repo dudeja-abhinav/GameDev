@@ -70,8 +70,8 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     public void newBaskets(){
-        for (int y = (GAME_HEIGHT - 4*BASKET_HEIGHT); y >= -(5*BASKET_HEIGHT); y -= 5*BASKET_HEIGHT){
-            if(y == (GAME_HEIGHT - 4*BASKET_HEIGHT)){
+        for (int y = (GAME_HEIGHT - 4*BASKET_HEIGHT - 5); y >= -(5*BASKET_HEIGHT); y -= 5*BASKET_HEIGHT){
+            if(y == (GAME_HEIGHT - 4*BASKET_HEIGHT - 5)){
                 baskets.add(newBasket((GAME_WIDTH - BASKET_WIDTH)/2, y, null));
             } else {
                 baskets.add(newBasket(random.nextInt(0, (GAME_WIDTH - BASKET_WIDTH + 1)), y, baskets.get(baskets.size()-1)));
@@ -129,6 +129,10 @@ public class GamePanel extends JPanel implements Runnable{
             stopBaskets();
             eggJumped = false;
             baskets.remove(baskets.get(0));
+            nextBasket.y = egg.y + EGG_DIAMETER - 5;
+            for(int i = 1; i < baskets.size(); i++){
+                baskets.get(i).y = baskets.get(i-1).y - 5*BASKET_HEIGHT;
+            }
             egg.setXVelocity(nextBasket.xVelocity);
             score.addPoint();
         }
@@ -175,6 +179,9 @@ public class GamePanel extends JPanel implements Runnable{
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_SPACE){
                 eggJump();
+            }
+            if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                System.exit(0);
             }
         }
 
