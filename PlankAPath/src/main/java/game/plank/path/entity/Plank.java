@@ -9,17 +9,17 @@ public class Plank extends Rectangle {
     //0 - horizontal, 1 - vertical
     public int orientation;
     //0 - not fixed, 1 - fixed
-    public int type;
+    public boolean isFixed;
     //-1 - Normal, 1 - Once
-    public int status;
+    public int type;
 
-    public Plank(int x, int y, int width, int height, int length, int id, int orientation, int type, int status){
+    public Plank(int x, int y, int width, int height, int length, int id, int orientation, boolean isFixed, int type){
         super(x, y, width, height);
         this.length = length;
         this.id = id;
         this.orientation = orientation;
+        this.isFixed = isFixed;
         this.type = type;
-        this.status = status;
     }
 
     public void draw(Graphics g){
@@ -28,14 +28,14 @@ public class Plank extends Rectangle {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         Color color = Color.decode("#754209");
-        if(this.type == 1){
+        if(this.isFixed){
             color = Color.GRAY;
         }
         g2d.setColor(color);
         RoundRectangle2D roundedPlank = new RoundRectangle2D.Double(x, y, width, height, 10, 10);
         g2d.fill(roundedPlank);
         color = Color.GREEN;
-        if(this.status == 1){
+        if(this.type == 1){
             color = Color.yellow;
         }
         g2d.setColor(color);

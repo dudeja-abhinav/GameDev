@@ -2,25 +2,29 @@ package game.plank.path.entity;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import static game.plank.path.util.Constants.BOTTOM_CELL_WIDTH;
 
 public class Cell extends Rectangle {
+    public int id;
     //-1 - Middle, 0 - Start, 1 - Finish
-    public int type;
+    public int location;
     //-1 - Normal, 0 - Death, 1 - Once
-    public int status;
+    public int type;
     //Up, Left, Down, Right
-    public int [] plankId;
+    public ArrayList<Integer> plankId;
     //Up, Left, Down, Right
-    public boolean [] entry;
+    public ArrayList<Boolean> entry;
 
-    public Cell(int x, int y, int width, int status, int type, boolean [] entry){
+    public Cell(int x, int y, int width, int id, int type, int location, ArrayList entry){
         super(x, y, width, width);
+        this.id = id;
+        this.location = location;
         this.type = type;
-        this.status = status;
         this.entry = entry;
-        this.plankId = new int[]{-1, -1, -1, -1};
+        this.plankId = new ArrayList<>(Collections.nCopies(4, -1));
     }
 
     public void draw(Graphics g){
@@ -35,17 +39,17 @@ public class Cell extends Rectangle {
         g2d.setColor(color);
         RoundRectangle2D roundedSquare = new RoundRectangle2D.Double(x, y, width, height, 10, 10);
         g2d.fill(roundedSquare);
-        switch (this.status) {
+        switch (this.type) {
             case 0:
-                color = Color.YELLOW;
+                color = Color.RED;
                 break;
             case 1:
-                color = Color.RED;
+                color = Color.YELLOW;
                 break;
             default:
                 color = Color.GREEN;
         }
-        if(this.type == 1){
+        if(this.location == 1){
             color = Color.BLUE;
         }
         g2d.setColor(color);
