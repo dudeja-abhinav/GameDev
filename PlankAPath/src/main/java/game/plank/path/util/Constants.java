@@ -12,4 +12,8 @@ public class Constants {
     public static final int MINIMUM_CELL_GAP = 70;
     public static final int MAX_ROWS = 6;
     public static final int MAX_COLUMNS = 10;
+    public static final int PLAYER_SIZE = 25;
+    public static final int PICKED_UP_PLANK_X = MINIMUM_CELL_GAP / 2;
+    public static final int PICKED_UP_PLANK_Y = MINIMUM_CELL_GAP / 2;
+    public static final int PLAYER_SPEED = 2;
 }

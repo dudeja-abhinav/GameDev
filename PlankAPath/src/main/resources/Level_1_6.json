@@ -1,0 +1,17 @@
+{
+  "cells": [
+    { "id": 0, "x": 1, "y": 2, "location": 0, "type": -1, "entry": [true, true, true, true] },
+    { "id": 1, "x": 4, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 2, "x": 5, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 3, "x": 8, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 4, "x": 8, "y": 4, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 5, "x": 8, "y": 5, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 6, "x": 5, "y": 4, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 7, "x": 4, "y": 4, "location": 1, "type": -1, "entry": [true, true, true, true] }
+  ],
+  "planks": [
+    { "id": 0, "cell1": [2, 1], "cell2": [2, 4], "isFixed": false, "type": -1 },
+    { "id": 1, "cell1": [2, 4], "cell2": [2, 5], "isFixed": false, "type": -1 },
+    { "id": 2, "cell1": [2, 8], "cell2": [4, 8], "isFixed":  true, "type":  -1}
+  ]
+}

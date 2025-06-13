@@ -1,0 +1,10 @@
+{
+  "cells": [
+    { "id": 0, "x": 3, "y": 2, "location": 0, "type": -1, "entry": [true, true, true, true] },
+    { "id": 1, "x": 5, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 2, "x": 7, "y": 2, "location": 1, "type": -1, "entry": [true, true, true, true] }
+  ],
+  "planks": [
+    { "id": 0, "cell1": [2, 3], "cell2": [2, 5], "isFixed": false, "type": -1 }
+  ]
+}

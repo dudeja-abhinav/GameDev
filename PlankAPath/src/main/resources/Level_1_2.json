@@ -1,0 +1,15 @@
+{
+  "cells": [
+    { "id": 0, "x": 4, "y": 1, "location": 0, "type": -1, "entry": [true, true, true, true] },
+    { "id": 1, "x": 4, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 2, "x": 4, "y": 3, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 3, "x": 5, "y": 3, "location": -1, "type": -1, "entry": [true, true, true, true] },
+    { "id": 4, "x": 6, "y": 3, "location": 1, "type": -1, "entry": [true, true, true, true] }
+  ],
+  "planks": [
+    { "id": 0, "cell1": [1, 4], "cell2": [2, 4], "isFixed": true, "type": -1 },
+    { "id": 1, "cell1": [2, 4], "cell2": [3, 4], "isFixed": true, "type": -1 },
+    { "id": 2, "cell1": [3, 4], "cell2": [3, 5], "isFixed": true, "type": -1 },
+    { "id": 3, "cell1": [3, 5], "cell2": [3, 6], "isFixed": true, "type": -1 }
+  ]
+}
