@@ -1,0 +1,23 @@
+{
+  "cells": [
+    { "id": 0, "x": 0, "y": 0, "location": 0, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 1, "x": 1, "y": 0, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 2, "x": 3, "y": 0, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 3, "x": 1, "y": 1, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 4, "x": 2, "y": 1, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 5, "x": 4, "y": 1, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 6, "x": 4, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 7, "x": 5, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 8, "x": 7, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 9, "x": 9, "y": 2, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": true },
+    { "id": 10, "x": 1, "y": 3, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 11, "x": 7, "y": 3, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 12, "x": 4, "y": 4, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 13, "x": 7, "y": 5, "location": -1, "type": -1, "entry": [true, true, true, true], "hasFood": false },
+    { "id": 14, "x": 8, "y": 5, "location": 1, "type": -1, "entry": [true, true, true, true], "hasFood": false }
+  ],
+  "planks": [
+    { "id": 0, "cell1": [0, 0], "cell2": [0, 1], "isFixed": false, "type": -1 },
+    { "id": 1, "cell1": [0, 1], "cell2": [0, 3], "isFixed": false, "type": -1 }
+  ]
+}

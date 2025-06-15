@@ -3,6 +3,7 @@ package game.plank.path;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import game.plank.path.entity.Cell;
+import game.plank.path.entity.HUD;
 import game.plank.path.entity.Plank;
 import game.plank.path.entity.Player;
 
@@ -31,10 +32,12 @@ public class GamePanel extends JPanel implements Runnable{
     private int level_group = 0;
     private int level_number = 0;
     private Player player;
+    private HUD hud = new HUD(0, 1, 1);
     private int previousCellId;
     private int previousPlankId;
     private int nextCellId;
     private boolean keyPressAllowed = true;
+    private boolean foodConsumedForLevel = false;
 
     GamePanel() throws IOException {
         loadNextLevel();
@@ -56,6 +59,7 @@ public class GamePanel extends JPanel implements Runnable{
             delta += (now - lastTime)/ns;
             lastTime = now;
             if(delta >= 1){
+                hud.updateTime();
                 move();
                 try {
                     checkCollision();
@@ -86,6 +90,7 @@ public class GamePanel extends JPanel implements Runnable{
             pickedUpPlank.draw(g);
         }
         player.draw(g);
+        hud.draw(g);
     }
 
     public void move(){
@@ -103,6 +108,7 @@ public class GamePanel extends JPanel implements Runnable{
                 reconcilePlank(previousPlankId);
                 reconcileCell(previousCellId, player.direction);
                 checkAndRemovePlank((player.direction + 2) % 4, currentCell);
+                checkAndEatFood(currentCell);
                 checkAndUpdateLevel(currentCell.location, currentCell.type);
                 previousCellId = -1;
                 previousPlankId = -1;
@@ -123,7 +129,7 @@ public class GamePanel extends JPanel implements Runnable{
     public void loadNextLevel() throws IOException {
         level_number = (level_number % 10) + 1;
         if(level_number == 1){
-            level_group++;
+            level_group = (level_group % 10) + 1;
         }
         loadLevel();
     }
@@ -133,9 +139,12 @@ public class GamePanel extends JPanel implements Runnable{
         previousPlankId = -1;
         previousCellId = -1;
         nextCellId = -1;
+        keyPressAllowed = true;
+        foodConsumedForLevel = false;
         cells.clear();
         planks.clear();
         player = null;
+        hud = new HUD(hud.foodCount, level_group, level_number);
         String filePath = String.join("", "/Level_", String.valueOf(level_group), "_", String.valueOf(level_number), ".json");
         ObjectMapper mapper = new ObjectMapper();
         InputStream inputStream = GamePanel.class.getResourceAsStream(filePath);
@@ -176,13 +185,14 @@ public class GamePanel extends JPanel implements Runnable{
         int id = (int) cellJson.get("id");
         int location = (int) cellJson.get("location");
         int type = (int) cellJson.get("type");
+        boolean hasFood = (boolean) cellJson.get("hasFood");
         ArrayList<Boolean> entry = (ArrayList<Boolean>) cellJson.get("entry");
         int x_coord = (int) cellJson.get("x");
         int y_coord = (int) cellJson.get("y");
         levelLayout[y_coord][x_coord] = id;
         int x = (MINIMUM_CELL_GAP/2) + (x_coord * (TOP_CELL_WIDTH + MINIMUM_CELL_GAP));
         int y = (GAME_HEIGHT - (MINIMUM_CELL_GAP/2) - ((MAX_ROWS - 1 - y_coord) * MINIMUM_CELL_GAP) - ((MAX_ROWS - y_coord) * TOP_CELL_WIDTH));
-        return new Cell(x, y, TOP_CELL_WIDTH, id, type, location, entry);
+        return new Cell(x, y, TOP_CELL_WIDTH, id, type, location, entry, hasFood);
     }
 
     private Plank computePlank(Map<String, Object> plankJson){
@@ -204,6 +214,7 @@ public class GamePanel extends JPanel implements Runnable{
         Cell cell1 = cells.get(levelLayout[cell1_coord.get(0)][cell1_coord.get(1)]);
         Cell cell2 = cells.get(levelLayout[cell2_coord.get(0)][cell2_coord.get(1)]);
         addPlankToCells(cell1, cell2, id);
+        blockPath(cell1_coord.get(1), cell1_coord.get(0), cell2_coord.get(1), cell2_coord.get(0));
         int x = computePlankX(Math.min(cell1.x, cell2.x), orientation);
         int y = computePlankY(Math.min(cell1.y, cell2.y), orientation);
         return new Plank(x, y, width, height, length, id, orientation, isFixed, type);
@@ -257,6 +268,14 @@ public class GamePanel extends JPanel implements Runnable{
         }
         if(type == 0){
             loadLevel();
+        }
+    }
+
+    private void checkAndEatFood(Cell cell){
+        if(cell.hasFood){
+            cell.hasFood = false;
+            foodConsumedForLevel = true;
+            hud.addFoodCount();
         }
     }
 
@@ -318,25 +337,25 @@ public class GamePanel extends JPanel implements Runnable{
     public int getCellId2(int direction, int col, int row){
         if(direction == 0){
             for(int i = row - 1; i >= 0; i--){
-                if(levelLayout[i][col] != -1){
+                if(levelLayout[i][col] > -1){
                     return levelLayout[i][col];
                 }
             }
         } else if(direction == 1) {
             for (int i = col - 1; i >= 0; i--) {
-                if (levelLayout[row][i] != -1) {
+                if (levelLayout[row][i] > -1) {
                     return levelLayout[row][i];
                 }
             }
         } else if(direction == 2){
             for(int i = row + 1; i < MAX_ROWS; i++){
-                if(levelLayout[i][col] != -1){
+                if(levelLayout[i][col] > -1){
                     return levelLayout[i][col];
                 }
             }
         } else if(direction == 3) {
             for (int i = col + 1; i < MAX_COLUMNS; i++) {
-                if (levelLayout[row][i] != -1) {
+                if (levelLayout[row][i] > -1) {
                     return levelLayout[row][i];
                 }
             }
@@ -371,6 +390,47 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
         return -1;
+    }
+
+    public boolean noPlankBlocking(int x1, int y1, int x2, int y2){
+        if(x1 == x2){
+            for(int i = Math.min(y1, y2) + 1; i < Math.max(y1, y2); i++){
+                if(levelLayout[i][x1] == -2){
+                    return false;
+                }
+            }
+        } else {
+            for(int i = Math.min(x1, x2) + 1; i < Math.max(x1, x2); i++){
+                if(levelLayout[y1][i] == -2){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void blockPath(int x1, int y1, int x2, int y2){
+        if(x1 == x2){
+            for(int i = Math.min(y1, y2) + 1; i < Math.max(y1, y2); i++){
+                levelLayout[i][x1] = -2;
+            }
+        } else {
+            for(int i = Math.min(x1, x2) + 1; i < Math.max(x1, x2); i++){
+                levelLayout[y1][i] = -2;
+            }
+        }
+    }
+
+    public void unblockPath(int x1, int y1, int x2, int y2){
+        if(x1 == x2){
+            for(int i = Math.min(y1, y2) + 1; i < Math.max(y1, y2); i++){
+                levelLayout[i][x1] = -1;
+            }
+        } else {
+            for(int i = Math.min(x1, x2) + 1; i < Math.max(x1, x2); i++){
+                levelLayout[y1][i] = -1;
+            }
+        }
     }
 
     public void pickUpPlank(int cellId1, int cellId2, int plankId, int direction){
@@ -414,6 +474,10 @@ public class GamePanel extends JPanel implements Runnable{
         int direction = player.direction;
         int cellId1 = player.cellId;
         int cellId2 = getCellId2(direction, player.x_coord, player.y_coord);
+        int cell1_x_coord = player.x_coord;
+        int cell1_y_coord = player.y_coord;
+        int cell2_x_coord = getNewXCoords(direction, cell1_x_coord, cell1_y_coord, cellId2);
+        int cell2_y_coord = getNewYCoords(direction, cell1_x_coord, cell1_y_coord, cellId2);
         int distance = getDistanceBetweenCells(direction, player.x_coord, player.y_coord);
         System.out.println("direction : " + direction + " cellId1 " + cellId1 + " cellId2 " + cellId2 + " distance " + distance);
         if(cellId2 != -1 && distance > 0) {
@@ -421,11 +485,13 @@ public class GamePanel extends JPanel implements Runnable{
                 int plankId = cells.get(cellId1).plankId.get(direction);
                 System.out.println("picking up plank : " + plankId);
                 if (plankId != -1 && !planks.get(plankId).isFixed) {
+                    unblockPath(cell1_x_coord, cell1_y_coord, cell2_x_coord, cell2_y_coord);
                     pickUpPlank(cellId1, cellId2, plankId, direction);
                 }
             } else {
-                if(distance == pickedUpPlank.length && cells.get(cellId1).plankId.get(direction) == -1){
+                if(distance == pickedUpPlank.length && cells.get(cellId1).plankId.get(direction) == -1 && noPlankBlocking(cell1_x_coord, cell1_y_coord, cell2_x_coord, cell2_y_coord)){
                     System.out.println("Putting down plank : " + pickedUpPlank.id);
+                    blockPath(cell1_x_coord, cell1_y_coord, cell2_x_coord, cell2_y_coord);
                     putDownPlank(cellId1, cellId2, direction);
                 }
             }
@@ -441,6 +507,7 @@ public class GamePanel extends JPanel implements Runnable{
             previousPlankId = cell1.plankId.get(direction);
             nextCellId = cell2Id;
             keyPressAllowed = false;
+            hud.addMoveCount();
         }
     }
 
@@ -481,6 +548,9 @@ public class GamePanel extends JPanel implements Runnable{
                     plankKeyPressed();
                 } else if(e.getKeyCode() == KeyEvent.VK_R){
                     try {
+                        if(foodConsumedForLevel){
+                            hud.foodCount--;
+                        }
                         loadLevel();
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
@@ -488,6 +558,7 @@ public class GamePanel extends JPanel implements Runnable{
                 } else if(e.getKeyCode() == KeyEvent.VK_G){
                     level_group = 0;
                     level_number = 0;
+                    hud.foodCount = 0;
                     try {
                         loadNextLevel();
                     } catch (IOException ex) {

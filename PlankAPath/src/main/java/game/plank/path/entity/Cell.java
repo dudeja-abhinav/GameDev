@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static game.plank.path.util.Constants.BOTTOM_CELL_WIDTH;
+import static game.plank.path.util.Constants.FOOD_SIZE;
 
 public class Cell extends Rectangle {
     public int id;
@@ -17,14 +18,16 @@ public class Cell extends Rectangle {
     public ArrayList<Integer> plankId;
     //Up, Left, Down, Right
     public ArrayList<Boolean> entry;
+    public boolean hasFood;
 
-    public Cell(int x, int y, int width, int id, int type, int location, ArrayList entry){
+    public Cell(int x, int y, int width, int id, int type, int location, ArrayList entry, boolean hasFood){
         super(x, y, width, width);
         this.id = id;
         this.location = location;
         this.type = type;
         this.entry = entry;
         this.plankId = new ArrayList<>(Collections.nCopies(4, -1));
+        this.hasFood = hasFood;
     }
 
     public void draw(Graphics g){
@@ -54,6 +57,10 @@ public class Cell extends Rectangle {
         }
         g2d.setColor(color);
         RoundRectangle2D roundedLining = new RoundRectangle2D.Double(x+5, y+5, width-10, height-10, 5, 5);
-        g2d.draw(roundedLining);
+        g2d.fill(roundedLining);
+        if(hasFood){
+            g2d.setColor(Color.decode("#00B0F0"));
+            g2d.fillOval(x + 10, y + 10, FOOD_SIZE, FOOD_SIZE);
+        }
     }
 }
